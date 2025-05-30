@@ -12,9 +12,9 @@ import re
 
 
 # Use your own values here
-api_id = 20158386
-api_hash = '2516d92450ed017c8a976d1838ab2558'
-phone_number = '+79277998905'
+api_id = NNNNNNNNNN
+api_hash = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+phone_number = '+NNNNNNNNNNN'
 
 app = Client("my_account", api_id, api_hash, phone_number)
 print(f'app started at {datetime.now()}')
@@ -24,37 +24,36 @@ channels = defaultdict(dict, {})
 source_girls_and_channels = defaultdict(list) #where I met them
 private_channels = defaultdict(list)
 
-channels_list = ['anastasiaalabugina']
+channels_list = ['pogodki_11']
 
 cities =  ['Москв', 'Питер', 'Санкт', 'Новосибирск', 'Екатеринбург', 'Липецк', 'Воронеж', 'Курск', 'Белгород', 'Шерегеш', 'Алта', 'Киев', 'Минск', 'Улан-Удэ', 'Кемеров']
 
 @app.on_message(filters.command('girl'))
 async def find_girls(client, message:types.Message):
-  #chat = 'pogodki_11' #channel
+  
   print('STARTED...')
   for chat in channels_list:
     print(f'Chat name: {chat}')
     first_message = await app.get_messages(chat, 1)
     channels[chat]['channel_creation'] = first_message.date
-    async for post in app.get_chat_history(chat, limit=10):
-      #print('here')
-      #print(post.id, end='->')
 
+    async for post in app.get_chat_history(chat, limit=10):
       await asyncio.sleep(randint(1, 20))
-      #try:
-        #if post.caption:
-          #print(post.views)
-          #if any(word in post.caption for word in cities):
-            #print(post.caption)
-        #if post.photo:
-          #await app.download_media(post.photo.file_id, file_name=f'/home/eduvm/{chat}/{post.photo.file_id}_{post.photo.date}.jpg')
+
       try:
+        if post.caption:
+          print(post.views)
+          if any(word in post.caption for word in cities):
+            print(post.caption)
+        if post.photo:
+          await app.download_media(post.photo.file_id, file_name=f'/home/eduvm/{chat}/{post.photo.file_id}_{post.photo.date}.jpg')
+      try:
+
         async for rep in app.get_discussion_replies(chat, post.id):
           if rep.from_user:
             user = rep.from_user
             #print(user)
             if not user.id in girls.keys():
-              
               await asyncio.sleep(12)
               user_id = await app.resolve_peer(user.id)
               bio = await app.invoke(functions.users.GetFullUser(id=user_id))
@@ -105,11 +104,9 @@ async def find_girls(client, message:types.Message):
         print('Message not found or deleted')
       print('PARSING DONE!')
     
-  #print(girls)
-  #print(channels)
-  #print(source_girls_and_channels)
+
   print(f'All channels parsed: {channels_list}')
-  print(f'Private channles: {private_channels}')
+  print(f'Private channels: {private_channels}')
 
   with open('girls.json', 'w+', encoding='utf-8') as file:
     json.dump(girls, file, indent='\t')
